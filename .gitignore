@@ -1,0 +1,20 @@
+# virtual environment
+.venv/
+venv/
+
+# python cruft
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+
+# secrets
+.env
+
+# IDE
+.idea/
+
+# OS
+.DS_Store
