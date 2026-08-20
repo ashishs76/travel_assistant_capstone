@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from ..orchestrator.graph import build_graph
-from ..orchestrator.request_router import IncompleteRequestError
+from ..orchestrator.extractor import IncompleteRequestError
 
 pytestmark = pytest.mark.skipif(
     not os.environ.get("ANTHROPIC_API_KEY"), reason="requires ANTHROPIC_API_KEY"

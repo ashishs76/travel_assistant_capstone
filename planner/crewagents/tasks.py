@@ -17,6 +17,10 @@ def build_execution_task(agent, planning_task, weather, rag_facts):
         description=(
             f"Using the day-by-day skeleton from the previous step, add an estimated cost "
             f"and short note per activity. Weather context: {weather}. "
+            f"IMPORTANT: if a day's precipitation probability exceeds 50%, avoid scheduling "
+            f"outdoor-tagged activities (parks, viewpoints) that day — prefer museums, "
+            f"restaurants, and other indoor options, and note in that day's summary that "
+            f"the schedule was adjusted for rain. "
             f"Write a 1-2 sentence welcome note paraphrasing (never quoting) these facts: {rag_facts}."
         ),
         expected_output="A finalized itinerary with per-day cost estimates and a welcome note.",

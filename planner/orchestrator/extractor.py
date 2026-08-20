@@ -1,4 +1,4 @@
-# planner/nodes/router.py
+
 import json
 import re
 from typing import Optional
@@ -51,7 +51,7 @@ def _call_claude(user_request: str) -> dict:
     return json.loads(cleaned)
 
 
-def route(state: dict) -> dict:
+def extract_trip_details(state: dict) -> dict:
     text = state["user_request"]
 
     data = _call_claude(text)
