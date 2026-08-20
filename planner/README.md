@@ -29,11 +29,43 @@ _python -m pytest planner/tests/ -v_
 You can test end-to-end MCP by running this command: 
 _python -m pytest planner/tests/mcp_test.py::test_mcp_poi_roundtrip -v -s_
 
-2. **_test_wikipedia_rag.py_** tests the Wikpedia REST API called via **retriever.py**
+2. **_wikipedia_rag_test.py_** tests the Wikpedia REST API called via **retriever.py**
 You can run the test by executing:
-_python -m pytest planner/tests/test_wikipedia_rag.py -v -s_
+_python -m pytest planner/tests/wikipedia_rag_test.py -v -s_
 
+3. _**crew_test.py**_ tests the CrewAI agents (Trip Planner, Itinerary Executor) that are responsible for building the travel plan along with suggesting an itinerary.
 
 **Design decisions**
 **1. Why wrap OpenStreetMap under MCP and not Weather data from Opne-Meteo?**
 MCP is used specifically for POIs (Point Of Interests) as you can easily switch the provider in the backend if the need arises.
+
+
+Router treats an incomplete request as a hard stop, not a retry target — the user, not the LLM, is the authority on missing trip details, so the system asks rather than guesses.
+
+```mermaid
+---
+config:
+  flowchart:
+    curve: linear
+---
+graph TD;
+        __start__([<p>__start__</p>]):::first
+        router(router)
+        weather(weather)
+        poi(poi)
+        rag(rag)
+        crew(crew)
+        guardrails(guardrails)
+        __end__([<p>__end__</p>]):::last
+        __start__ --> router;
+        crew --> guardrails;
+        poi --> rag;
+        rag --> crew;
+        router --> poi;
+        router --> weather;
+        weather --> rag;
+        guardrails --> __end__;
+        classDef default fill:#f2f0ff,line-height:1.2
+        classDef first fill-opacity:0
+        classDef last fill:#bfb6fc
+```
