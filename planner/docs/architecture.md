@@ -79,7 +79,7 @@ flowchart TB
 | **RAG retriever** | `rag/destination_retriever.py` | Fetches a short grounded Wikipedia summary for the destination, returning the fact plus a citation URL. |
 | **Tool/RAG adapter nodes** | `orchestrator/tool_nodes.py`, `orchestrator/rag_node.py` | Thin LangGraph node wrappers converting the above tools' plain function signatures into `PlannerState` reads/writes. |
 | **CrewAI Planner/Executor** | `crewagents/agents.py`, `crewagents/tasks.py`, `crewagents/crew.py` | Two-agent crew: Planner distributes POIs across days; Executor adds cost/timing and a weather- and RAG-grounded welcome note. Explicit handoff via `context=[planning_task]`. |
-| **crew_node** | `orchestrator/crew_node.py` | Wraps the entire CrewAI crew as a single LangGraph node — the seam between LangGraph (infrastructure) and CrewAI (agent collaboration). |
+| **crew_node** | `orchestrator/crew_node.py` | Wraps the entire CrewAI crew as a single LangGraph node — the seam between LangGraph (infrastructure) and CrewAI (agent collaboration). Catches exceptions from the crew and logs them to `guardrail_violations`, consistent with `tool_nodes.py`'s failure handling. |
 | **Guardrails** | `orchestrator/guardrails.py` | Deterministic, non-LLM final checks: itinerary non-empty, POIs found, high-rain days acknowledged. Any violation withholds `final_itinerary`. |
 | **Graph wiring** | `orchestrator/graph.py` | Builds the LangGraph `StateGraph`: extractor → parallel weather/POI → merge at RAG → crew → guardrails → END. |
 | **Shared state** | `orchestrator/planner_state.py` | `PlannerState` TypedDict — the shared workspace every node reads/writes. |
@@ -148,7 +148,6 @@ No provider-abstraction layer (e.g. `litellm`) is used — this was a deliberate
 
 ## Limitations
 
-- **`crew_node.py` has no error handling.** Any exception from `run_travel_crew()` (CrewAI internal error, Anthropic API failure mid-crew, malformed output) propagates unhandled and crashes `graph.invoke()`. This is the single highest-risk, least-guarded step in the pipeline — unlike `weather_node`/`poi_node`, which both catch and degrade gracefully.
 - **RAG title-matching gap.** `destination_retriever.py` passes the destination string to Wikipedia's title lookup with only spaces replaced by underscores. Country-suffixed strings like `"Kyoto, Japan"` (as commonly produced by `extractor.py`) will not match Wikipedia's actual page title `"Kyoto"`, silently returning no RAG context — indistinguishable from "no request failure" or "genuinely no matching page."
 - **POI retrieval depends on a free, unauthenticated third-party API** (Overpass) with no uptime guarantee; mitigated with retry/backoff, but intermittent 504s are a known, observed failure mode during development.
 - **`trip_type` is extracted but not consumed.** Neither `graph.py` nor `crew_node.py` branches or behaves differently based on `single_city`/`multi_city`/`day_trip` — it's present in state and printed in `main.py`'s output, but has no functional effect on the itinerary produced.

@@ -194,7 +194,6 @@ At least 4 required; this project implements 7 — full detail and code referenc
 7. **Evaluation** — automated harness with 4 metrics and an ablation
 
 ---
----
 
 ## AI Assistance Disclosure
 
@@ -206,10 +205,9 @@ This project was developed with substantial assistance from Claude (Anthropic), 
 - **Documentation** — drafting `docs/architecture.md`, `eval/eval_report.md`, and this README, grounded in the actual codebase and real evaluation run data (`eval/raw_run_output.txt`), not hypothetical descriptions
 - **Evaluation analysis** — analyzing real `eval/harness.py` output to identify and explain actual failure modes (see `eval/eval_report.md`'s Failure Analysis section)
 
-All code was run, tested, and reviewed by the author throughout development, not accepted unverified. The author can explain every component, agent, tool, prompt, and design decision in this project, including the specific tradeoffs behind design decisions such as scoping POI search to a single OpenStreetMap category, using MCP for POI retrieval but not weather, and the known, documented gaps in `crew_node.py`'s error handling and `trip_type`'s downstream usage.
-
+All code was run, tested, and reviewed by the author throughout development, not accepted unverified. The author can explain every component, agent, tool, prompt, and design decision in this project, including the specific tradeoffs behind design decisions such as scoping POI search to a single OpenStreetMap category, using MCP for POI retrieval but not weather, and the known, documented gap in `trip_type`'s downstream usage.
 ---
 
 ## Known Limitations
 
-See [`docs/architecture.md`](planner/docs/architecture.md#limitations) for the full, honest list, including: `crew_node.py` currently has no error handling around CrewAI/API failures; the RAG retriever's Wikipedia title-matching can miss valid pages for country-suffixed destination strings; POI retrieval is scoped to a single OpenStreetMap category (`park`) as a deliberate latency tradeoff; and `trip_type` is extracted but not yet used to vary planning behavior.
+See [`docs/architecture.md`](planner/docs/architecture.md#limitations) for the full, honest list, including: the RAG retriever's Wikipedia title-matching can miss valid pages for country-suffixed destination strings; POI retrieval is scoped to a single OpenStreetMap category (`park`) as a deliberate latency tradeoff; and `trip_type` is extracted but not yet used to vary planning behavior.
