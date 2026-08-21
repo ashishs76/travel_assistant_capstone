@@ -1,4 +1,4 @@
-from planner.rag import retriever
+from planner.rag import destination_retriever
 
 def test_retrieve_returns_fact_and_citation():
     results = retriever.retrieve_destination_context("Kyoto")
