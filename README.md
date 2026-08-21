@@ -99,7 +99,20 @@ Your request is missing: num_days, trip_type. Please rewrite your request to inc
 
 Here, "I want to go to Lisbon" gives no day count and no signal about single-city vs. multi-city vs. day-trip — there isn't enough context to infer either field, so the system asks rather than guessing. It is not that `trip_type` must always be typed explicitly (as `single_city`/`multi_city`/`day_trip`) — most requests that state a day count or mention multiple destinations (e.g. "a day trip to X", "visiting X and then Y") will have it inferred silently.
 
----
+### Known limitation: multi-city requests are not yet supported
+
+The extractor correctly recognizes multi-city intent, but the tool layer (weather/POI lookup) currently expects a single geocodable destination string, so a multi-city request will fail downstream rather than producing an itinerary:
+
+```
+Where would you like to go? Describe your trip: Plan a 6-day trip visiting Rome and then Florence, budget $1500
+
+Request: Plan a 6-day trip visiting Rome and then Florence, budget $1500
+
+[an error or empty/blocked result — see docs/architecture.md and eval/eval_report.md's TC10 for the full failure analysis]
+```
+
+The extractor correctly infers `trip_type: multi_city` for this request, but `weather_node`/`poi_node` pass the combined string `"Rome and Florence"` to Nominatim/Open-Meteo as if it were one place, which fails to geocode. Per-city tool decomposition (splitting the request into separate weather/POI calls per city, with genuine conditional routing)  is left as an extension for this project — see `docs/architecture.md`'s Limitations for the full explanation, and `eval/eval_report.md`'s TC10 failure analysis for what actually happens when this is run.
+
 
 ## Running Tests
 
@@ -205,8 +218,8 @@ This project was developed with substantial assistance from Claude (Anthropic), 
 - **Documentation** — drafting `docs/architecture.md`, `eval/eval_report.md`, and this README, grounded in the actual codebase and real evaluation run data (`eval/raw_run_output.txt`), not hypothetical descriptions
 - **Evaluation analysis** — analyzing real `eval/harness.py` output to identify and explain actual failure modes (see `eval/eval_report.md`'s Failure Analysis section)
 
-All code was run, tested, and reviewed by the author throughout development, not accepted unverified. The author can explain every component, agent, tool, prompt, and design decision in this project, including the specific tradeoffs behind design decisions such as scoping POI search to a single OpenStreetMap category, using MCP for POI retrieval but not weather, and the known, documented gap in `trip_type`'s downstream usage.
----
+### All code was run, tested, and reviewed by the author throughout development, not accepted unverified. The author can explain every component, agent, tool, prompt, and design decision in this project, including the specific tradeoffs behind design decisions such as scoping POI search to a single OpenStreetMap category, using MCP for POI retrieval but not weather, and the known, documented gap in `trip_type`'s downstream usage.
+
 
 ## Known Limitations
 
