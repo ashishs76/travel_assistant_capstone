@@ -80,6 +80,13 @@ def main():
         print(str(e))
         return
 
+    print("\n=== DETAILS ===")
+    print(f"Destination: {final_state.get('destination')}")
+    print(f"Trip type:   {final_state.get('trip_type')}")
+    print(f"Days:        {final_state.get('num_days')}")
+    print(f"Budget:      {final_state.get('budget_usd')}")
+    print("\n")
+
     if final_state.get("final_itinerary"):
         print("=== FINAL ITINERARY ===")
         print(final_state["final_itinerary"])
@@ -87,12 +94,6 @@ def main():
         print("=== ITINERARY WITHHELD — GUARDRAIL VIOLATIONS ===")
         for v in final_state.get("guardrail_violations", []):
             print(f"  - {v}")
-
-    print("\n=== DETAILS ===")
-    print(f"Destination: {final_state.get('destination')}")
-    print(f"Trip type:   {final_state.get('trip_type')}")
-    print(f"Days:        {final_state.get('num_days')}")
-    print(f"Budget:      {final_state.get('budget_usd')}")
 
     citations = [
         f"{c.get('source_title')}: {c.get('source_url')}"
